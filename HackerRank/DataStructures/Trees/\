@@ -1,0 +1,87 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+Node nodes[100001] = {0};
+bool visited[100001] = {0};
+int compCount[100001] = {0};
+int prefixSum[100001] = {0};
+int pairSum[100001] = {0};
+int prefixPairSum[100001] = {0};
+int tripleSum[100001] = {0};
+
+struct Node
+{
+    Node(){}
+    vector<int> nInds;
+};
+
+void traverse(int currInd, int comp)
+{
+    visited[currInd] = true;
+    compCount[comp]++;
+    for(int i = 0; i < nodes[currInd].nInds.size(); i++)
+    {
+        int nInd = nodes[currInd].nInds[i];
+        if(!visited[nInd])
+        {
+            traverse(nodes[currInd].nInds[i], comp);
+        }
+    }
+}
+
+int main()
+{
+    int n = 0;
+    cin >> n;
+
+    for(int i = 1; i < (n + 1); i++)
+    {
+        nodes[i] = Node();
+    }
+    
+    for(int i = 0; i < (n - 1); i++)
+    {
+        int val = 0; int nVal = 0;
+        char color;
+
+        cin >> val >> nVal >> color;
+
+        if(color != 'r')
+        {
+            nodes[val].nInds.push_back(nVal);
+            nodes[nVal].nInds.push_back(val);
+        }
+    }
+
+    int comps = 0;
+    for(int i = 1; i < (n + 1); i++)
+    {
+        if(visited[i] == 0)
+        {
+            comps++;
+            traverse(i, comps);
+        }
+    }
+
+    prefixSum[comps] = compCount[comps];
+    for(int i = (comps - 1); i >= 1; i--)
+    {
+        prefixSum[i] = (compCount[i] + prefixSum[i + 1]) % modder;
+    }
+
+    for(int i = (comps - 1); i >= 1; i--)
+    {
+        pairSum[i] = (compCount[i] * prefixSum[i]) % modder;
+    }
+
+    for(int i = (comps - 1); i >= 1; i--)
+    {
+        prefixPairSum[i] = (pairSum[i] * prefixPairSum[i + 1]) % modder;
+    }
+
+
+    
+}
